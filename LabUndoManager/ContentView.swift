@@ -7,18 +7,55 @@
 
 import SwiftUI
 
+class ViewModel: ObservableObject {
+  @Published var array: [Int] = [0, 1, 2]
+}
+
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+
+  @Environment(\.undoManager) var undoManager
+  @StateObject private var viewModel = ViewModel()
+
+  var body: some View {
+    VStack {
+      HStack {
+        Button("Add") {
+          add()
         }
-        .padding()
+        Button("Undo") {
+          undoManager?.undo()
+        }
+        .disabled(!(undoManager?.canUndo ?? false))
+        Button("Redo") {
+          undoManager?.redo()
+        }
+        .disabled(!(undoManager?.canRedo ?? false))
+      }
+
+      ForEach(viewModel.array.indices, id: \.self) { index in
+        Text("\(viewModel.array[index])")
+      }
+      Spacer()
     }
+    .padding()
+  }
+
+  func add() {
+    viewModel.array.append(viewModel.array.count)
+    undoManager?.registerUndo(withTarget: viewModel, handler: { viewModel in
+      remove()
+    })
+  }
+
+  func remove() {
+    viewModel.array.removeLast()
+    undoManager?.registerUndo(withTarget: viewModel, handler: { viewModel in
+      add()
+    })
+  }
+
 }
 
 #Preview {
-    ContentView()
+  ContentView()
 }
