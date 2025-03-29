@@ -22,6 +22,11 @@ struct ContentView: View {
         Button("Add") {
           add()
         }
+        Button("Remove") {
+          remove()
+        }
+      }
+      HStack {
         Button("Undo") {
           undoManager?.undo()
         }
