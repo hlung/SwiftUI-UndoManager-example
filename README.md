@@ -1,4 +1,4 @@
-# SwiftUI UndoManager example
+# SwiftUI UndoManager example (undo & redo)
 
 ![demo](demo.png)
 
